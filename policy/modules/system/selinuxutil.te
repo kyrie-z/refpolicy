@@ -69,7 +69,7 @@ role newrole_roles types newrole_t;
 type policy_config_t;
 files_security_file(policy_config_t)
 
-neverallow ~can_relabelto_binary_policy policy_config_t:file relabelto;
+#(zzl) neverallow~can_relabelto_binary_policy policy_config_t:file relabelto;
 #neverallow ~can_write_binary_policy policy_config_t:file { write append };
 
 #

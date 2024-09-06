@@ -1348,3 +1348,8 @@ ifndef(`distro_redhat',`
 		wm_role_template(sysadm, sysadm_t, sysadm_application_exec_domain, sysadm_r)
 	')
 ')
+
+# for manage deepin_elf_verify program
+optional_policy(`
+	deepin_elfverify_entry_type(sysadm_t)
+')

@@ -192,3 +192,10 @@ optional_policy(`
 optional_policy(`
 	unconfined_domain(apt_t)
 ')
+
+optional_policy(`
+	deepin_package_manage_domain_set(apt_t)
+	deepin_security_verify_domtrans(apt_t)
+	deepin_executable_file_type_set(apt_t)
+	deepin_access_security_server(apt, true)
+')

@@ -1,0 +1,872 @@
+## <summary>Policy for deepin_perm_control and related programs.</summary>
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_sidtwo_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_sidtwo_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_sidtwo_type_set',`
+	gen_require(`
+		attribute deepin_sidtwo_type;
+	')
+
+	typeattribute $1 deepin_sidtwo_type;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_file_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_file_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_file_type_set',`
+	gen_require(`
+		attribute deepin_file_type;
+	')
+
+	deepin_sidtwo_type_set($1)
+	typeattribute $1 deepin_file_type;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_readable_file_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_readable_file_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_readable_file_type_set',`
+	gen_require(`
+		attribute deepin_readable_file_type;
+	')
+
+	deepin_sidtwo_type_set($1)
+	typeattribute $1 deepin_readable_file_type;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_writable_file_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_writable_file_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_writable_file_type_set',`
+	gen_require(`
+		attribute deepin_writable_file_type;
+	')
+
+	deepin_sidtwo_type_set($1)
+	typeattribute $1 deepin_writable_file_type;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_deletable_file_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_deletable_file_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_deletable_file_type_set',`
+	gen_require(`
+		attribute deepin_deletable_file_type;
+	')
+
+	deepin_sidtwo_type_set($1)
+	typeattribute $1 deepin_deletable_file_type;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_executable_file_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_executable_file_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_executable_file_type_set',`
+	gen_require(`
+		attribute deepin_executable_file_type;
+	')
+
+	deepin_sidtwo_type_set($1)
+	typeattribute $1 deepin_executable_file_type;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_usaudit_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_usaudit_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_usaudit_type_set',`
+	gen_require(`
+		attribute deepin_usaudit_type;
+	')
+
+	typeattribute $1 deepin_usaudit_type;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_usaudit_process_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_usaudit_process_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_usaudit_process_type_set',`
+	gen_require(`
+		attribute deepin_usaudit_process_type;
+	')
+
+	typeattribute $1 deepin_usaudit_process_type;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_usaudit_socket_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_usaudit_socket_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_usaudit_socket_type_set',`
+	gen_require(`
+		attribute deepin_usaudit_socket_type;
+	')
+
+	typeattribute $1 deepin_usaudit_socket_type;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_usaudit_file_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_usaudit_file_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_usaudit_file_type_set',`
+	gen_require(`
+		attribute deepin_usaudit_file_type;
+	')
+
+	typeattribute $1 deepin_usaudit_file_type;
+')
+
+########################################
+## <summary>
+##  Make the specified domain usable for
+##  the deepin_app_domain.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Type to be used for deepin_app_domain.
+##  </summary>
+## </param>
+#
+interface(`deepin_app_domain_set',`
+	gen_require(`
+		attribute deepin_app_domain;
+	')
+
+	deepin_executable_file_type_set($1)
+	typeattribute $1 deepin_app_domain;
+')
+
+########################################
+## <summary>
+##  Make the specified domain usable for
+##  the deepin_sys_domain.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Type to be used for deepin_sys_domain.
+##  </summary>
+## </param>
+#
+interface(`deepin_sys_domain_set',`
+	gen_require(`
+		attribute deepin_sys_domain;
+	')
+	deepin_app_domain_set($1)
+	typeattribute $1 deepin_sys_domain;
+')
+
+########################################
+## <summary>
+##  Make the specified domain usable for
+##  the deepin_sec_domain.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Type to be used for deepin_sec_domain.
+##  </summary>
+## </param>
+#
+interface(`deepin_sec_domain_set',`
+	gen_require(`
+		attribute deepin_sec_domain;
+	')
+	deepin_app_domain_set($1)
+	typeattribute $1 deepin_sec_domain;
+')
+
+########################################
+## <summary>
+##  Make the specified domain usable for
+##  the deepin_security_server_domain.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Type to be used for deepin_security_server_domain.
+##  </summary>
+## </param>
+#
+interface(`deepin_security_server_domain_set',`
+	gen_require(`
+		attribute deepin_security_server_domain;
+	')
+
+	typeattribute $1 deepin_security_server_domain;
+')
+
+########################################
+## <summary>
+##  Make the specified domain usable for
+##  the deepin_package_manage_domain.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Type to be used for deepin_package_manage_domain.
+##  </summary>
+## </param>
+#
+interface(`deepin_package_manage_domain_set',`
+	gen_require(`
+		attribute deepin_package_manage_domain;
+	')
+	typeattribute $1 deepin_package_manage_domain;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_app_private_file_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_app_private_file_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_app_private_file_type_set',`
+	gen_require(`
+		attribute deepin_app_private_file_type;
+	')
+
+	deepin_sidtwo_type_set($1)
+	typeattribute $1 deepin_app_private_file_type;
+')
+
+########################################
+## <summary>
+##  Make the specified domain usable for
+##  the deepin_app_access_camera_domain.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Type to be used for deepin_app_access_camera_domain.
+##  </summary>
+## </param>
+#
+interface(`deepin_app_access_camera_domain_set',`
+	gen_require(`
+		attribute deepin_app_access_camera_domain;
+	')
+
+	typeattribute $1 deepin_app_access_camera_domain;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_camera_resource_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_camera_resource_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_camera_resource_type_set',`
+	gen_require(`
+		attribute deepin_camera_resource_type;
+	')
+
+	typeattribute $1 deepin_camera_resource_type;
+')
+
+########################################
+## <summary>
+##  allow domain to access camera resource.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_access_camera_resource',`
+	gen_require(`
+		attribute deepin_camera_resource_type;
+	')
+
+	## <desc>
+	##  <p>
+	##  Grant the $1_t domains access camera resource by condition
+	##  </p>
+	## </desc>
+	gen_tunable(`allow_$1_access_camera', $2)
+
+	tunable_policy(`allow_$1_access_camera',`
+		allow $1_t deepin_camera_resource_type:chr_file { getattr ioctl map open read };
+	')
+')
+
+########################################
+## <summary>
+##  Make the specified domain usable for
+##  the deepin_app_access_microphone_domain.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Type to be used for deepin_app_access_microphone_domain.
+##  </summary>
+## </param>
+#
+interface(`deepin_app_access_microphone_domain_set',`
+	gen_require(`
+		attribute deepin_app_access_microphone_domain;
+	')
+
+	typeattribute $1 deepin_app_access_microphone_domain;
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_microphone_resource_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_microphone_resource_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_microphone_resource_type_set',`
+	gen_require(`
+		attribute deepin_microphone_resource_type;
+	')
+
+	typeattribute $1 deepin_microphone_resource_type;
+')
+
+########################################
+## <summary>
+##  allow domain to access microphone resource.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_access_microphone_resource',`
+	gen_require(`
+		attribute deepin_microphone_resource_type;
+	')
+
+	## <desc>
+	##  <p>
+	##  Grant the $1_t domains access microphone resource by condition
+	##  </p>
+	## </desc>
+	gen_tunable(`allow_$1_access_microphone', $2)
+
+	tunable_policy(`allow_$1_access_microphone',`
+		allow $1_t deepin_microphone_resource_type:chr_file { getattr ioctl map open read };
+	')
+')
+
+########################################
+## <summary>
+##  let domain unkillable.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_process_unkillable',`
+	gen_require(`
+		attribute domain;
+		class service { stop reload };
+	')
+
+	## <desc>
+	##  <p>
+	##  Let $1 be unkillable.
+	##  </p>
+	## </desc>
+	gen_tunable(`allow_$1_be_unkillable', $2)
+
+	tunable_policy(`! allow_$1_be_unkillable',`
+		allow domain $1_t:process { sigkill sigstop signal };
+		allow domain $1_t:service { stop reload };
+	')
+')
+
+########################################
+## <summary>
+##  let exec file writable.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_execfile_protection',`
+	gen_require(`
+		attribute domain;
+	')
+
+	## <desc>
+	##  <p>
+	##  Let $1 can be write.
+	##  </p>
+	## </desc>
+	gen_tunable(`allow_$1_execfile_protection', $2)
+
+	tunable_policy(`! allow_$1_execfile_protection',`
+		allow domain $1_t:dir_file_class_set ~{ relabelfrom relabelto };
+	')
+')
+
+########################################
+## <summary>
+##  allow specific domain to access security service.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_access_security_server',`
+	gen_require(`
+		attribute deepin_security_server_domain;
+		class dbus { send_msg };
+	')
+
+	## <desc>
+	##  <p>
+	##  Allow $1 to access security service.
+	##  </p>
+	## </desc>
+	gen_tunable(`allow_$1_access_security_server', $2)
+
+	tunable_policy(`allow_$1_access_security_server',`
+		allow $1_t deepin_security_server_domain:dbus send_msg;
+	')
+')
+
+########################################
+## <summary>
+##  allow specific domain to manage all files which
+##  were labeled to deepin_sidtwo_type.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_manage_all_sidtwo',`
+	gen_require(`
+		attribute deepin_sidtwo_type;
+	')
+
+	## <desc>
+	##  <p>
+	##  Allow $1 to manage deepin_sidtwo_type.
+	##  </p>
+	## </desc>
+	gen_tunable(`allow_$1_manage_all_sidtwo', $2)
+
+	tunable_policy(`allow_$1_manage_all_sidtwo',`
+		allow $1_t deepin_sidtwo_type:dir_file_class_set ~{ relabelfrom relabelto };
+	')
+')
+
+########################################
+## <summary>
+##  Make the specified type usable for
+##  the deepin_wall_paper_resource_type.
+## </summary>
+## <param name="type">
+##  <summary>
+##  Type to be used for deepin_wall_paper_resource_type.
+##  </summary>
+## </param>
+#
+interface(`deepin_wall_paper_resource_type_set',`
+	gen_require(`
+		attribute deepin_wall_paper_resource_type;
+	')
+
+	typeattribute $1 deepin_wall_paper_resource_type;
+')
+
+########################################
+## <summary>
+##  allow specific domain to manage all files which
+##  were labeled to deepin_wall_paper_resource_type.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_manage_wall_paper',`
+	gen_require(`
+		attribute deepin_wall_paper_resource_type;
+	')
+
+	## <desc>
+	##  <p>
+	##  Allow $1 to manage deepin_wall_paper_resource_type.
+	##  </p>
+	## </desc>
+	gen_tunable(`allow_$1_manage_wall_paper', $2)
+
+	tunable_policy(`allow_$1_manage_wall_paper',`
+		allow $1_t deepin_wall_paper_resource_type:file ~{ relabelfrom relabelto };
+		allow $1_t deepin_wall_paper_resource_type:dir ~{ relabelfrom relabelto };
+		allow $1_t deepin_wall_paper_resource_type:lnk_file ~{ relabelfrom relabelto };
+	')
+')
+
+########################################
+## <summary>
+##  Execute a domain transition to
+##  run deepin security verify.
+## </summary>
+## <param name="domain">
+## <summary>
+##  Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`deepin_security_verify_domtrans',`
+	gen_require(`
+		type deepin_security_verify_t, deepin_security_verify_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	files_search_var_lib($1)
+	libs_search_lib($1)
+
+	domtrans_pattern($1, deepin_security_verify_exec_t, deepin_security_verify_t)
+')
+
+########################################
+## <summary>
+##  Execute a domain transition to
+##  run deepin permission manager.
+## </summary>
+## <param name="domain">
+## <summary>
+##  Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`deepin_perm_manager_domtrans',`
+	gen_require(`
+		type deepin_perm_manager_t, deepin_perm_manager_exec_t;
+	')
+
+	domtrans_pattern($1, deepin_perm_manager_exec_t, deepin_perm_manager_t)
+')
+
+########################################
+## <summary>
+##  allow specific domain to send dbus to security enhance.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_dbus_chat_security_enhance',`
+	gen_require(`
+		class dbus { send_msg };
+	')
+	allow $1_t deepin_security_verify_t:dbus send_msg;
+	allow deepin_security_verify_t $1_t:dbus send_msg;
+')
+
+########################################
+## <summary>
+##  allow specific domain to access network.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allow access.
+##  </summary>
+## </param>
+#
+interface(`deepin_access_network',`
+
+	## <desc>
+	##  <p>
+	##  allow $1 to access upstream network.
+	##  </p>
+	## </desc>
+	gen_tunable(`allow_$1_access_net_up', $2)
+
+	## <desc>
+	##  <p>
+	##  allow $1 to access downstream network.
+	##  </p>
+	## </desc>
+	gen_tunable(`allow_$1_access_net_down', $2)
+
+	tunable_policy(`allow_$1_access_net_up',`
+		allow $1_t self:socket { create write };
+	')
+
+	tunable_policy(`allow_$1_access_net_down',`
+		allow $1_t self:socket { create read };
+	')
+')
+
+########################################
+## <summary>
+##  allow domain to access all sensitive resources.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_access_all_sensitive_resource',`
+	# 摄像头
+	deepin_access_camera_resource($1, false)
+
+	# 麦克风
+	deepin_access_microphone_resource($1, false)
+
+	# 文件保护, 可执行文件必须可读, 因此无法配置是否可读
+	deepin_execfile_protection($1, false)
+
+	# 进程防杀
+	deepin_process_unkillable($1, false)
+
+	# 联网管控，默认允许访问网络
+	deepin_access_network($1, true)
+
+	#其他敏感级资源的相关接口调用
+	#....
+')
+
+########################################
+## <summary>
+##  allow domain to access all system resources.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_access_all_system_resource',`
+
+	deepin_access_all_sensitive_resource($1)
+
+	# 拥有访问所有sidtwo的权限
+	deepin_manage_all_sidtwo($1, false)
+
+	# 管理墙纸
+	deepin_manage_wall_paper($1, false)
+
+	# 其他系统级资源的相关接口调用
+	#....
+')
+
+########################################
+## <summary>
+##  allow domain to access all security resources.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_access_all_security_resource',`
+
+	deepin_access_all_sensitive_resource($1)
+
+	# 访问安全服务
+	deepin_access_security_server($1, false)
+
+	# 拥有访问所有sidtwo的权限
+	deepin_manage_all_sidtwo($1, false)
+
+	# 其他安全级资源的相关接口调用
+	#....
+')
+
+
+########################################
+## <summary>
+##  Make general progams in deepin-elf-verify an entrypoint for
+##  the specified domain.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  The domain for which deepin_elf_verify_exec_t is an entrypoint.
+##  </summary>
+## </param>
+#
+interface(`deepin_elfverify_entry_type',`
+	gen_require(`
+		type deepin_elf_verify_exec_t;
+	')
+
+	domain_entry_file($1, deepin_elf_verify_exec_t)
+')
+
+########################################
+## <summary>
+##  Also allow to read a possible deepin-elf-verify symlink.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_read_elf_verify',`
+	gen_require(`
+		type deepin_elf_verify_exec_t;
+	')
+
+	read_lnk_files_pattern($1, deepin_elf_verify_exec_t, deepin_elf_verify_exec_t)
+	read_files_pattern($1, deepin_elf_verify_exec_t, deepin_elf_verify_exec_t)
+')
+
+
+########################################
+## <summary>
+##  Get the attributes of files in bin directories.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_getattr_elf_verify_files',`
+	gen_require(`
+		type deepin_elf_verify_exec_t;
+	')
+
+	getattr_files_pattern($1, deepin_elf_verify_exec_t, deepin_elf_verify_exec_t)
+')
+
+########################################
+## <summary>
+##  execute deepin-elf-verify program.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_exec_elf_verify',`
+	gen_require(`
+		type deepin_elf_verify_exec_t;
+	')
+
+	can_exec($1, deepin_elf_verify_exec_t)
+')
+
+########################################
+## <summary>
+##  Send and receive messages from
+##  deepin-elf-verify over dbus.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allowed access.
+##  </summary>
+## </param>
+#
+interface(`deepin_dbus_chat_deepin_login_counts',`
+	gen_require(`
+		type deepin_login_count_t;
+		class dbus send_msg;
+	')
+
+	allow $1 deepin_login_count_t:dbus send_msg;
+	allow deepin_login_count_t $1:dbus send_msg;
+')

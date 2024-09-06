@@ -1,0 +1,860 @@
+policy_module(deepin_perm_control, 1.0.0)
+
+## <desc>
+## <p>
+## deepin gdb flag.
+## </p>
+## </desc>
+gen_tunable(open_deepin_gdb, false)
+
+## <desc>
+## <p>
+## whether init process can enable security service.
+## </p>
+## </desc>
+gen_tunable(can_enable_security_service, true)
+
+## <desc>
+## <p>
+## whether init process can disable security service.
+## </p>
+## </desc>
+gen_tunable(can_disable_security_service, false)
+
+## <desc>
+## <p>
+## enable process audit.
+## </p>
+## </desc>
+gen_tunable(deepin_enable_process_audit, false)
+
+## <desc>
+## <p>
+## enable file audit.
+## </p>
+## </desc>
+gen_tunable(deepin_enable_file_audit, true)
+
+## <desc>
+## <p>
+## enable socket audit.
+## </p>
+## </desc>
+gen_tunable(deepin_enable_socket_audit, false)
+
+## <desc>
+## <p>
+## enable sysadm can gdb security service.
+## </p>
+## </desc>
+gen_tunable(can_gdb_security_service, false)
+
+## <desc>
+## <p>
+## enable process unkillable.
+## </p>
+## </desc>
+gen_tunable(enable_process_unkillable, true)
+
+## <desc>
+##  <p>
+##  Let dpkg can upgrade package.
+##  </p>
+## </desc>
+gen_tunable(`allow_dpkg_upgrade', false)
+
+## <desc>
+##  <p>
+##  use failsafe context directly when root login.
+##  </p>
+## </desc>
+gen_tunable(`root_use_failsafe_context_directly', true)
+
+## <desc>
+##  <p>
+##  open app networking control.
+##  </p>
+## </desc>
+gen_tunable(`open_app_networking_control', false)
+
+## <desc>
+##  <p>
+##  open developer mode of usec.
+##  </p>
+## </desc>
+gen_tunable(`open_usec_developer_mode', false)
+
+########################################
+#
+# permission_manager_dbus_daemon policy
+#
+require {
+	attribute domain;
+	attribute deepin_app_domain;
+	attribute deepin_sys_domain;
+	attribute deepin_sec_domain;
+	attribute deepin_sidtwo_type;
+	attribute deepin_file_type;
+	attribute deepin_readable_file_type;
+	attribute deepin_writable_file_type;
+	attribute deepin_deletable_file_type;
+	attribute deepin_executable_file_type;
+	attribute deepin_usaudit_type;
+	attribute deepin_usaudit_process_type;
+	attribute deepin_usaudit_socket_type;
+	attribute deepin_usaudit_file_type;
+	attribute files_unconfined_type;
+	attribute deepin_security_server_domain;
+	attribute deepin_security_server_sidtwo_domain;
+	attribute deepin_package_manage_domain;
+	attribute unkillable_domain;
+	attribute file_type;
+	attribute packet_type;
+	attribute port_type;
+	attribute node_type;
+	attribute netif_type;
+	attribute proc_type;
+	attribute device_node;
+	attribute filesystem_type;
+	attribute ipsec_spd_type;
+	attribute sysctl_type;
+	attribute systemd_user_session_type;
+	attribute login_userdomain;
+	type sysadm_t;
+	type security_t;
+	class dbus { acquire_svc send_msg };
+	class nscd all_nscd_perms;
+	class context contains;
+	class service all_service_perms;
+	class passwd { passwd chfn chsh rootok crontab };
+	role system_r;
+	type sysadm_t;
+	type sysadm_sudo_t;
+	type dpkg_t;
+	type apt_t;
+	type dpkg_script_t;
+	type unlabeled_t;
+	type kernel_t;
+	type init_t;
+	type systemd_unit_t;
+	type home_root_t;
+	type deepin_elf_verify_t;
+}
+
+# This is default usec label
+type deepin_usec_t;
+deepin_app_domain_set(deepin_usec_t)
+deepin_app_domain_set(kernel_t)
+
+# for app to read selinux config
+selinux_read_policy(deepin_app_domain)
+seutil_read_file_contexts(deepin_app_domain)
+seutil_libselinux_linked(deepin_app_domain)
+
+type deepin_elf_verify_exec_t;
+# files_ro_base_file(deepin_elf_verify_exec_t)
+corecmd_executable_file(deepin_elf_verify_exec_t)
+dev_associate(deepin_elf_verify_exec_t)    #For /dev/MAKEDEV
+
+type deepin_elf_verify_t;
+init_daemon_domain(deepin_elf_verify_t, deepin_elf_verify_exec_t)
+# deepin_domain_set(deepin_elf_verify_t)
+mls_dbus_recv_all_levels(deepin_elf_verify_t)
+domain_mls_exemption(deepin_elf_verify_t)
+
+unconfined_domain(deepin_elf_verify_t)
+mcs_process_set_categories(deepin_elf_verify_t)
+mls_trusted_object(deepin_elf_verify_t)
+mls_process_write_all_levels(deepin_elf_verify_t)
+mls_process_read_all_levels(deepin_elf_verify_t)
+mls_socket_write_all_levels(deepin_elf_verify_t)
+mls_socket_read_all_levels(deepin_elf_verify_t)
+mls_dbus_send_all_levels(deepin_elf_verify_t)
+mls_file_read_all_levels(deepin_elf_verify_t)
+mls_file_write_all_levels(deepin_elf_verify_t)
+mls_fd_use_all_levels(deepin_elf_verify_t)
+mls_fd_share_all_levels(deepin_elf_verify_t)
+deepin_executable_file_type_set(deepin_elf_verify_t)
+read_files_pattern(domain, deepin_elf_verify_t, deepin_elf_verify_t)
+
+permissive deepin_elf_verify_t;
+
+type deepin_perm_manager_unit_t;
+deepin_file_type_set(deepin_perm_manager_unit_t)
+deepin_readable_file_type_set(deepin_perm_manager_unit_t)
+filetrans_pattern(domain, systemd_unit_t, deepin_perm_manager_unit_t, { dir file lnk_file }, "permission-manager.service")
+allow deepin_executable_file_type deepin_perm_manager_unit_t:service status;
+allow { kernel_t init_t } deepin_perm_manager_unit_t:service ~{ enable disable };
+allow deepin_package_manage_domain deepin_perm_manager_unit_t:service *;
+allow deepin_package_manage_domain deepin_perm_manager_unit_t:{ file lnk_file } ~{ relabelfrom };
+allow { kernel_t init_t initrc_t } deepin_perm_manager_unit_t:{ file lnk_file } *;
+allow { deepin_package_manage_domain deepin_elf_verify_t } self:dir_file_class_set ~{ audit_access relabelfrom relabelto };
+
+tunable_policy(`can_enable_security_service',`
+	allow { init_t initrc_t } deepin_perm_manager_unit_t:service enable;
+	allow { init_t initrc_t } deepin_perm_manager_unit_t:lnk_file create_lnk_file_perms;
+')
+
+tunable_policy(`can_disable_security_service',`
+	allow { init_t initrc_t } deepin_perm_manager_unit_t:service disable;
+	allow { init_t initrc_t } deepin_perm_manager_unit_t:lnk_file delete_lnk_file_perms;
+')
+
+role system_r types deepin_sidtwo_type;
+type deepin_perm_manager_exec_t;
+type deepin_perm_manager_t, deepin_security_server_domain;
+dbus_system_domain(deepin_perm_manager_t, deepin_perm_manager_exec_t)
+init_system_domain(deepin_perm_manager_t, deepin_perm_manager_exec_t)
+domain_unconfined(deepin_perm_manager_t)
+domain_mcs_exemption(deepin_perm_manager_t)
+domain_mls_exemption(deepin_perm_manager_t)
+
+type deepin_perm_manager_session_exec_t;
+application_domain(deepin_perm_manager_t, deepin_perm_manager_session_exec_t)
+domtrans_pattern(systemd_user_session_type, deepin_perm_manager_session_exec_t, deepin_perm_manager_t)
+domtrans_pattern(login_userdomain, deepin_perm_manager_session_exec_t, deepin_perm_manager_t)
+
+type deepin_perm_manager_sidtwo_t, deepin_security_server_domain, deepin_security_server_sidtwo_domain;
+deepin_sec_domain_set(deepin_perm_manager_sidtwo_t)
+domain_unkillable(deepin_perm_manager_sidtwo_t)
+domain_mcs_exemption(deepin_perm_manager_sidtwo_t)
+domain_mls_exemption(deepin_perm_manager_sidtwo_t)
+
+type deepin_perm_manager_file_t;
+deepin_file_type_set(deepin_perm_manager_file_t)
+deepin_readable_file_type_set(deepin_perm_manager_file_t)
+type_transition deepin_perm_manager_t etc_t:file deepin_perm_manager_file_t "LocalPropertyRepository.db";
+type_transition deepin_perm_manager_t home_root_t:{ dir file } deepin_home_sec_t ".sec";
+
+type deepin_security_enhance_exec_t;
+type deepin_security_enhance_t, deepin_security_server_domain;
+dbus_system_domain(deepin_security_enhance_t, deepin_security_enhance_exec_t)
+init_system_domain(deepin_security_enhance_t, deepin_security_enhance_exec_t)
+deepin_executable_file_type_set(deepin_security_enhance_t)
+domain_unconfined(deepin_security_enhance_t)
+
+type deepin_security_verify_exec_t;
+type deepin_security_verify_t, deepin_security_server_domain;
+userdom_user_application_domain(deepin_security_verify_t, deepin_security_verify_exec_t)
+deepin_executable_file_type_set(deepin_security_verify_t)
+
+type deepin_security_verify_sidtwo_t, deepin_security_server_domain;
+deepin_sec_domain_set(deepin_security_verify_sidtwo_t)
+
+# for test
+type deepin_perm_manager_test_exec_t;
+domain_entry_file(sysadm_t, deepin_perm_manager_test_exec_t)
+domtrans_pattern(deepin_perm_manager_t, deepin_perm_manager_test_exec_t, sysadm_t)
+
+tunable_policy(`open_deepin_gdb',`
+	allow deepin_usec_t deepin_app_domain:process { ptrace signal sigkill sigstop };
+')
+
+tunable_policy(`open_usec_developer_mode',`
+	allow deepin_usec_t security_t:dir list_dir_perms;
+	allow deepin_usec_t security_t:file rw_file_perms;
+
+	allow deepin_usec_t security_t:security setbool;
+
+	allow deepin_usec_t security_t:security setenforce;
+')
+
+# 注意, 这里由deepin_perm_manager_unit_t 保证服务不被stop就能防止通过systemctl stop来杀安全服务了
+allow initrc_t deepin_security_server_domain:process { signal sigkill sigstop };
+
+tunable_policy(`can_gdb_security_service',`
+	allow deepin_usec_t deepin_security_server_domain:process { ptrace signal sigkill sigstop };
+	allow deepin_usec_t deepin_perm_manager_unit_t:service *;
+	allow sysadm_t deepin_perm_manager_unit_t:service *;
+	allow sysadm_sudo_t deepin_perm_manager_unit_t:service *;
+	deepin_perm_manager_domtrans(sysadm_t)
+	deepin_perm_manager_domtrans(sysadm_sudo_t)
+')
+
+tunable_policy(`! enable_process_unkillable',`
+	allow deepin_executable_file_type unkillable_domain:process { signal sigkill sigstop };
+')
+
+# temporary plan
+deepin_process_unkillable(deepin_perm_manager_sidtwo, true)
+deepin_execfile_protection(deepin_perm_manager_sidtwo, true)
+deepin_process_unkillable(deepin_security_verify_sidtwo, true)
+
+role system_r types deepin_security_server_domain;
+
+allow deepin_security_server_domain self:process *;
+allow deepin_security_server_domain self:dbus *;
+allow deepin_security_server_domain self:association *;
+allow deepin_security_server_domain self:packet *;
+allow deepin_security_server_domain self:fd *;
+allow deepin_security_server_domain self:key *;
+allow deepin_security_server_domain self:context *;
+allow deepin_security_server_domain self:capability *;
+allow deepin_security_server_domain self:capability2 *;
+allow deepin_security_server_domain self:cap_userns *;
+allow deepin_security_server_domain self:cap2_userns *;
+allow deepin_security_server_domain self:socket_class_set *;
+allow deepin_security_server_domain self:key_socket *;
+allow deepin_security_server_domain self:filesystem *;
+allow deepin_security_server_domain self:system *;
+allow deepin_security_server_domain self:service *;
+allow deepin_security_server_domain self:dir_file_class_set *;
+allow deepin_security_server_domain self:{ sem msg msgq shm ipc } *;
+allow deepin_security_server_domain self:nscd *;
+allow deepin_security_server_domain self:passwd *;
+allow deepin_security_server_domain self:bpf *;
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:process *;
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:fd *;
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:key *;
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:key_socket *;
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:socket_class_set *;
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:{ sem msg msgq shm ipc } *;
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:association *;
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:dbus { acquire_svc send_msg };
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:dir_file_class_set *;
+allow deepin_security_server_domain { deepin_executable_file_type unlabeled_t }:system *;
+allow deepin_security_server_domain ipsec_spd_type:association *;
+allow deepin_security_server_domain port_type:{ tcp_socket udp_socket rawip_socket sctp_socket } *;
+allow deepin_security_server_domain { packet_type unlabeled_t }:packet *;
+allow deepin_security_server_domain { node_type unlabeled_t }:node *;
+allow deepin_security_server_domain { netif_type unlabeled_t }:netif *;
+allow deepin_security_server_domain { file_type filesystem_type proc_type sysctl_type }:dir_file_class_set *;
+allow deepin_security_server_domain device_node:dir_file_class_set *;
+allow deepin_security_server_domain { filesystem_type unlabeled_t }:filesystem *;
+allow deepin_security_server_domain { file_type deepin_file_type }:service *;
+allow deepin_security_server_domain security_t:security *;
+allow deepin_security_server_domain file_type:system *;
+allow deepin_security_server_domain deepin_file_type:filesystem *;
+allow deepin_security_server_domain deepin_file_type:dir_file_class_set *;
+allow deepin_security_server_domain deepin_executable_file_type:dir_file_class_set *;
+corenet_all_recvfrom_unlabeled(deepin_security_server_domain)
+domain_all_recvfrom_all_domains(deepin_security_server_domain)
+
+########################################
+#
+# app permission control policy
+#
+
+corecmd_exec_bin(deepin_app_domain)
+corecmd_exec_shell(deepin_app_domain)
+
+# file protect
+allow deepin_executable_file_type deepin_file_type:filesystem { getattr quotaget };
+allow deepin_file_type filesystem_type:filesystem associate;
+allow deepin_file_type self:filesystem associate;
+allow kernel_t deepin_file_type:dir_file_class_set { unlink setattr relabelfrom relabelto };
+allow deepin_executable_file_type deepin_file_type:service *;
+allow deepin_executable_file_type deepin_file_type:dir_file_class_set getattr;
+# 需要允许udev对所有管控和未管控的设备文件都有setattr权限
+allow deepin_executable_file_type deepin_file_type:{ chr_file blk_file } setattr;
+
+allow deepin_executable_file_type deepin_readable_file_type:dir list_dir_perms;
+allow deepin_executable_file_type deepin_readable_file_type:file read_file_perms;
+allow deepin_executable_file_type deepin_readable_file_type:lnk_file read_lnk_file_perms;
+allow deepin_executable_file_type deepin_readable_file_type:chr_file read_chr_file_perms;
+allow deepin_executable_file_type deepin_readable_file_type:blk_file read_blk_file_perms;
+allow deepin_executable_file_type deepin_readable_file_type:sock_file read_sock_file_perms;
+allow deepin_executable_file_type deepin_readable_file_type:fifo_file read_fifo_file_perms;
+allow deepin_executable_file_type deepin_readable_file_type:dir_file_class_set { mounton lock execmod map  };
+allow deepin_executable_file_type deepin_readable_file_type:filesystem { mount remount };
+
+allow deepin_executable_file_type deepin_writable_file_type:dir { setattr_dir_perms create_dir_perms add_entry_dir_perms del_entry_dir_perms };
+allow deepin_executable_file_type deepin_writable_file_type:file { setattr_file_perms create_file_perms write_file_perms map };
+allow deepin_executable_file_type deepin_writable_file_type:lnk_file { setattr_lnk_file_perms create_lnk_file_perms write_lnk_file_perms };
+allow deepin_executable_file_type deepin_writable_file_type:chr_file { setattr_chr_file_perms create_chr_file_perms write_chr_file_perms };
+allow deepin_executable_file_type deepin_writable_file_type:blk_file { setattr_blk_file_perms create_blk_file_perms write_blk_file_perms };
+allow deepin_executable_file_type deepin_writable_file_type:sock_file { setattr_sock_file_perms create_sock_file_perms write_sock_file_perms };
+allow deepin_executable_file_type deepin_writable_file_type:fifo_file { setattr_fifo_file_perms create_fifo_file_perms write_fifo_file_perms };
+allow deepin_executable_file_type deepin_writable_file_type:dir_file_class_set { mounton lock };
+allow deepin_executable_file_type deepin_writable_file_type:filesystem { mount remount };
+
+allow deepin_executable_file_type deepin_deletable_file_type:dir { rename_dir_perms delete_dir_perms reparent };
+allow deepin_executable_file_type deepin_deletable_file_type:file { rename_file_perms delete_file_perms };
+allow deepin_executable_file_type deepin_deletable_file_type:lnk_file { rename_lnk_file_perms delete_lnk_file_perms };
+allow deepin_executable_file_type deepin_deletable_file_type:chr_file { rename_chr_file_perms delete_chr_file_perms };
+allow deepin_executable_file_type deepin_deletable_file_type:blk_file { rename_blk_file_perms delete_blk_file_perms };
+allow deepin_executable_file_type deepin_deletable_file_type:sock_file { rename_sock_file_perms delete_sock_file_perms };
+allow deepin_executable_file_type deepin_deletable_file_type:fifo_file { rename_fifo_file_perms delete_fifo_file_perms };
+allow deepin_executable_file_type deepin_deletable_file_type:dir_file_class_set { mounton lock };
+allow deepin_executable_file_type deepin_deletable_file_type:filesystem { mount remount };
+
+allow deepin_executable_file_type deepin_executable_file_type:dir { list_dir_perms link };
+allow deepin_executable_file_type deepin_executable_file_type:file { exec_file_perms link execmod };
+allow deepin_executable_file_type deepin_executable_file_type:dbus send_msg;
+allow deepin_executable_file_type deepin_executable_file_type:process ~{ setcurrent setexec transition dyntransition setfscreate setsockcreate setkeycreate sigkill sigstop signal };
+allow deepin_executable_file_type deepin_executable_file_type:fd use;
+allow deepin_executable_file_type deepin_executable_file_type:key *;
+allow deepin_executable_file_type deepin_executable_file_type:key_socket ~{ relabelfrom relabelto };
+allow deepin_executable_file_type deepin_executable_file_type:{ sem msg msgq shm ipc } *;
+allow deepin_executable_file_type deepin_executable_file_type:association *;
+allow deepin_executable_file_type deepin_executable_file_type:socket_class_set ~{ relabelfrom relabelto };
+allow deepin_executable_file_type deepin_executable_file_type:dir_file_class_set { mounton lock };
+allow deepin_executable_file_type deepin_executable_file_type:filesystem { mount remount };
+allow deepin_executable_file_type deepin_executable_file_type:service ~{ stop reload };
+
+allow deepin_executable_file_type self:file { exec_file_perms link execmod };
+
+# Implement a blacklist mechanism
+
+########################################
+#
+# deepin_app_domain
+#
+allow deepin_app_domain deepin_executable_file_type:association *;
+allow deepin_app_domain filesystem_type:filesystem associate;
+
+allow deepin_app_domain self:process ~{ setcurrent setexec };
+allow deepin_app_domain self:process2 *;
+allow deepin_app_domain self:dbus *;
+allow deepin_app_domain self:association *;
+allow deepin_app_domain self:packet *;
+allow deepin_app_domain self:fd use;
+allow deepin_app_domain self:key *;
+allow deepin_app_domain self:passwd *;
+allow deepin_app_domain self:context contains;
+allow deepin_app_domain self:capability ~{ sys_boot };
+allow deepin_app_domain self:capability2 ~{ mac_admin };
+allow deepin_app_domain self:cap_userns ~{ sys_boot };
+allow deepin_app_domain self:cap2_userns ~{ mac_admin };
+allow deepin_app_domain self:socket_class_set ~{ relabelfrom relabelto };
+allow deepin_app_domain self:key_socket ~{ relabelfrom relabelto };
+allow deepin_app_domain self:filesystem associate;
+allow { deepin_app_domain -deepin_file_type } self:dir_file_class_set ~{ audit_access relabelfrom relabelto };
+allow deepin_app_domain self:{ sem msg msgq shm ipc } *;
+
+allow deepin_app_domain deepin_executable_file_type:process ~{ setcurrent setexec setfscreate setsockcreate setkeycreate ptrace sigkill sigstop signal };
+allow deepin_app_domain deepin_executable_file_type:process ptrace;
+allow deepin_app_domain deepin_executable_file_type:process2 *;
+allow deepin_app_domain deepin_executable_file_type:system *;
+allow deepin_app_domain deepin_executable_file_type:fd use;
+allow deepin_app_domain deepin_executable_file_type:key *;
+allow deepin_app_domain deepin_executable_file_type:key_socket ~{ relabelfrom relabelto };
+allow deepin_app_domain deepin_executable_file_type:{ sem msg msgq shm ipc } *;
+allow deepin_app_domain deepin_executable_file_type:socket_class_set ~{ relabelfrom relabelto };
+allow deepin_app_domain deepin_app_domain:dir list_dir_perms;
+allow deepin_app_domain { deepin_executable_file_type -deepin_executable_file_type }:{ file lnk_file } ~{ relabelfrom relabelto };
+
+allow deepin_app_domain port_type:{ tcp_socket udp_socket rawip_socket sctp_socket } ~{ relabelfrom relabelto };
+allow deepin_app_domain packet_type:packet *;
+allow deepin_app_domain node_type:node *;
+allow deepin_app_domain netif_type:netif *;
+
+allow deepin_app_domain { file_type filesystem_type proc_type sysctl_type }:dir_file_class_set ~{ relabelfrom relabelto };
+allow deepin_app_domain { file_type filesystem_type proc_type sysctl_type }:system { ipc_info syslog_read syslog_mod syslog_console module_request module_load };
+
+allow deepin_app_domain device_node:{ blk_file chr_file} ~{ audit_access relabelfrom relabelto };
+allow deepin_app_domain filesystem_type:filesystem ~{ relabelfrom relabelto };
+
+# dbus
+allow deepin_app_domain deepin_executable_file_type:dbus send_msg;
+
+# 应用联网管控总开关
+tunable_policy(`! open_app_networking_control',`
+	allow deepin_app_domain self:socket { create read write };
+')
+
+# 默认允许联网
+allow deepin_file_type self:socket { create read write };
+# 文件保护标签不开启防杀，只有进程保护类的标签才能设置防杀
+allow deepin_executable_file_type deepin_file_type:process ~{ setcurrent setexec transition setfscreate setsockcreate setkeycreate };
+
+# dpkg upgrade
+allow deepin_package_manage_domain deepin_sidtwo_type:dir_file_class_set { relabelfrom relabelto };
+allow deepin_package_manage_domain self:capability2 { mac_admin };
+tunable_policy(`allow_dpkg_upgrade',`
+	allow deepin_package_manage_domain deepin_app_domain:dir_file_class_set *;
+	allow deepin_package_manage_domain deepin_file_type:dir_file_class_set *;
+	allow deepin_package_manage_domain deepin_executable_file_type:dir_file_class_set *;
+	allow deepin_package_manage_domain deepin_executable_file_type:process { sigkill signal sigstop setexec };
+')
+
+########################################
+#
+# deepin_sys_domain
+#
+allow deepin_sys_domain self:capability sys_boot;
+allow deepin_sys_domain self:cap_userns sys_boot;
+
+########################################
+#
+# deepin_sec_domain
+#
+allow deepin_sec_domain self:capability sys_boot;
+allow deepin_sec_domain self:cap_userns sys_boot;
+
+# 定义应用程序私有文件的集合，并赋予系统管理员和系统特权域集合files_unconfined_type（包管理器、kernel_t等均加入了此属性集合）访问其的权限
+# 如果应用程序希望定义一个只有自己能访问的类型，则需在应用程序的策略模块中将定义的这个类型加入此属性，并且不将此类型加入file_type属性集合。
+attribute deepin_app_private_file_type;
+allow deepin_app_private_file_type filesystem_type:filesystem associate;
+allow deepin_security_server_domain deepin_app_private_file_type:dir_file_class_set *;
+allow deepin_executable_file_type deepin_app_private_file_type:dir_file_class_set getattr;
+
+# 敏感资源定义
+# ======== storage device control ========
+type deepin_na_storage_device_t;
+deepin_file_type_set(deepin_na_storage_device_t)
+
+type deepin_ro_storage_device_t;
+deepin_file_type_set(deepin_ro_storage_device_t)
+deepin_readable_file_type_set(deepin_ro_storage_device_t)
+
+type deepin_wo_storage_device_t;
+deepin_file_type_set(deepin_wo_storage_device_t)
+deepin_writable_file_type_set(deepin_wo_storage_device_t)
+
+type deepin_wd_storage_device_t;
+deepin_file_type_set(deepin_wd_storage_device_t)
+deepin_writable_file_type_set(deepin_wd_storage_device_t)
+deepin_deletable_file_type_set(deepin_wd_storage_device_t)
+
+type deepin_rw_storage_device_t;
+deepin_file_type_set(deepin_rw_storage_device_t)
+deepin_readable_file_type_set(deepin_rw_storage_device_t)
+deepin_writable_file_type_set(deepin_rw_storage_device_t)
+
+type deepin_rwd_storage_device_t;
+deepin_file_type_set(deepin_rwd_storage_device_t)
+deepin_readable_file_type_set(deepin_rwd_storage_device_t)
+deepin_writable_file_type_set(deepin_rwd_storage_device_t)
+deepin_deletable_file_type_set(deepin_rwd_storage_device_t)
+
+# aa=all access=rwd
+type deepin_aa_storage_device_t;
+deepin_file_type_set(deepin_aa_storage_device_t)
+deepin_readable_file_type_set(deepin_aa_storage_device_t)
+deepin_writable_file_type_set(deepin_aa_storage_device_t)
+deepin_deletable_file_type_set(deepin_aa_storage_device_t)
+
+type deepin_rx_storage_device_t;
+deepin_file_type_set(deepin_rx_storage_device_t)
+deepin_readable_file_type_set(deepin_rx_storage_device_t)
+deepin_executable_file_type_set(deepin_rx_storage_device_t)
+typeattribute deepin_rx_storage_device_t deepin_app_domain;
+
+type deepin_rwx_storage_device_t;
+deepin_file_type_set(deepin_rwx_storage_device_t)
+deepin_readable_file_type_set(deepin_rwx_storage_device_t)
+deepin_writable_file_type_set(deepin_rwx_storage_device_t)
+deepin_executable_file_type_set(deepin_rwx_storage_device_t)
+typeattribute deepin_rwx_storage_device_t deepin_app_domain;
+
+type deepin_rwdx_storage_device_t;
+deepin_file_type_set(deepin_rwdx_storage_device_t)
+deepin_readable_file_type_set(deepin_rwdx_storage_device_t)
+deepin_writable_file_type_set(deepin_rwdx_storage_device_t)
+deepin_deletable_file_type_set(deepin_rwdx_storage_device_t)
+deepin_executable_file_type_set(deepin_rwdx_storage_device_t)
+typeattribute deepin_rwdx_storage_device_t deepin_app_domain;
+
+# ======== file protection ========
+type deepin_na_file_t;
+deepin_file_type_set(deepin_na_file_t)
+
+type deepin_ro_file_t;
+deepin_file_type_set(deepin_ro_file_t)
+deepin_readable_file_type_set(deepin_ro_file_t)
+
+type deepin_wo_file_t;
+deepin_file_type_set(deepin_wo_file_t)
+deepin_writable_file_type_set(deepin_wo_file_t)
+
+type deepin_rw_file_t;
+deepin_file_type_set(deepin_rw_file_t)
+deepin_readable_file_type_set(deepin_rw_file_t)
+deepin_writable_file_type_set(deepin_rw_file_t)
+
+type deepin_wd_file_t;
+deepin_file_type_set(deepin_wd_file_t)
+deepin_writable_file_type_set(deepin_wd_file_t)
+deepin_deletable_file_type_set(deepin_wd_file_t)
+
+type deepin_rwd_file_t;
+deepin_file_type_set(deepin_rwd_file_t)
+deepin_readable_file_type_set(deepin_rwd_file_t)
+deepin_writable_file_type_set(deepin_rwd_file_t)
+deepin_deletable_file_type_set(deepin_rwd_file_t)
+
+type deepin_rx_file_t;
+deepin_file_type_set(deepin_rx_file_t)
+deepin_readable_file_type_set(deepin_rx_file_t)
+deepin_executable_file_type_set(deepin_rx_file_t)
+typeattribute deepin_rx_file_t deepin_app_domain;
+typeattribute deepin_rx_file_t deepin_executable_file_type;
+
+type deepin_rwx_file_t;
+deepin_file_type_set(deepin_rwx_file_t)
+deepin_readable_file_type_set(deepin_rwx_file_t)
+deepin_writable_file_type_set(deepin_rwx_file_t)
+deepin_executable_file_type_set(deepin_rwx_file_t)
+typeattribute deepin_rwx_file_t deepin_app_domain;
+typeattribute deepin_rwx_file_t deepin_executable_file_type;
+
+type deepin_rwdx_file_t;
+deepin_file_type_set(deepin_rwdx_file_t)
+deepin_readable_file_type_set(deepin_rwdx_file_t)
+deepin_writable_file_type_set(deepin_rwdx_file_t)
+deepin_deletable_file_type_set(deepin_rwdx_file_t)
+deepin_executable_file_type_set(deepin_rwdx_file_t)
+typeattribute deepin_rwdx_file_t deepin_app_domain;
+typeattribute deepin_rwdx_file_t deepin_executable_file_type;
+
+# ======== device protection ========
+type deepin_na_dev_t;
+deepin_file_type_set(deepin_na_dev_t)
+
+type deepin_ro_dev_t;
+deepin_file_type_set(deepin_ro_dev_t)
+deepin_readable_file_type_set(deepin_ro_dev_t)
+
+type deepin_wo_dev_t;
+deepin_file_type_set(deepin_wo_dev_t)
+deepin_writable_file_type_set(deepin_wo_dev_t)
+
+type deepin_rw_dev_t;
+deepin_file_type_set(deepin_rw_dev_t)
+deepin_readable_file_type_set(deepin_rw_dev_t)
+deepin_writable_file_type_set(deepin_rw_dev_t)
+
+type deepin_wd_dev_t;
+deepin_file_type_set(deepin_wd_dev_t)
+deepin_writable_file_type_set(deepin_wd_dev_t)
+deepin_deletable_file_type_set(deepin_wd_dev_t)
+
+type deepin_rwd_dev_t;
+deepin_file_type_set(deepin_rwd_dev_t)
+deepin_readable_file_type_set(deepin_rwd_dev_t)
+deepin_writable_file_type_set(deepin_rwd_dev_t)
+deepin_deletable_file_type_set(deepin_rwd_dev_t)
+
+# ======== camera ========
+attribute deepin_app_access_camera_domain;
+attribute deepin_camera_resource_type;
+type deepin_camera_dev_t;
+deepin_file_type_set(deepin_camera_dev_t)
+allow deepin_app_access_camera_domain deepin_camera_resource_type:chr_file ~{ relabelfrom relabelto setattr };
+
+# ======== microphone ========
+attribute deepin_app_access_microphone_domain;
+attribute deepin_microphone_resource_type;
+type deepin_microphone_dev_t;
+deepin_file_type_set(deepin_microphone_dev_t)
+allow deepin_app_access_microphone_domain deepin_microphone_resource_type:chr_file ~{ relabelfrom relabelto setattr };
+
+# ======== cdrom ========
+attribute deepin_app_access_cdrom_domain;
+
+# ======== wall paper resources ========
+attribute deepin_wall_paper_resource_type;
+type deepin_wall_paper_res_t;
+deepin_wall_paper_resource_type_set(deepin_wall_paper_res_t)
+deepin_file_type_set(deepin_wall_paper_res_t)
+deepin_readable_file_type_set(deepin_wall_paper_res_t)
+
+# ======== reboot ========
+#power_unit_t
+
+# ======== Mandatory controled ========
+require {
+	type selinux_config_t;
+	type policy_config_t;
+	type security_t;
+	type default_context_t;
+	type file_context_t;
+	type policy_src_t;
+	type semanage_store_t;
+	type semanage_read_lock_t;
+	type semanage_trans_lock_t;
+	type restorecond_run_t;
+	type restorecond_unit_t;
+	type checkpolicy_exec_t, checkpolicy_t;
+	type load_policy_exec_t, load_policy_t;
+	type newrole_exec_t, newrole_t;
+	type setfiles_exec_t, setfiles_t;
+	type restorecond_exec_t, restorecond_t;
+	type run_init_exec_t, run_init_t;
+	type semanage_exec_t, semanage_t;
+	type dpkg_exec_t;
+	type init_exec_t;
+	type shadow_t;
+	type etc_t;
+	type usr_t;
+	type boot_t;
+	type system_map_t;
+	type var_t;
+	type var_lib_t;
+	type systemd_journal_t;
+	type auditd_log_t;
+	type bin_t;
+	type lib_t;
+}
+
+# selinux resource
+#deepin_controlled_resource_type_set(selinux_config_t)
+#deepin_controlled_resource_type_set(policy_config_t)
+#deepin_controlled_resource_type_set(security_t)
+#deepin_controlled_resource_type_set(default_context_t)
+#deepin_controlled_resource_type_set(file_context_t)
+#deepin_controlled_resource_type_set(policy_src_t)
+#deepin_controlled_resource_type_set(semanage_store_t)
+#deepin_controlled_resource_type_set(semanage_read_lock_t)
+#deepin_controlled_resource_type_set(semanage_trans_lock_t)
+#deepin_controlled_resource_type_set(restorecond_run_t)
+#deepin_controlled_resource_type_set(restorecond_unit_t)
+#deepin_controlled_resource_type_set(checkpolicy_exec_t)
+#deepin_controlled_resource_type_set(load_policy_exec_t)
+#deepin_controlled_resource_type_set(newrole_exec_t)
+#deepin_controlled_resource_type_set(setfiles_exec_t)
+#deepin_controlled_resource_type_set(restorecond_exec_t)
+#deepin_controlled_resource_type_set(run_init_exec_t)
+#deepin_controlled_resource_type_set(semanage_exec_t)
+
+#deepin_controlled_resource_domain_set(checkpolicy_t)
+#deepin_controlled_resource_domain_set(load_policy_t)
+#deepin_controlled_resource_domain_set(newrole_t)
+#deepin_controlled_resource_domain_set(setfiles_t)
+#deepin_controlled_resource_domain_set(restorecond_t)
+#deepin_controlled_resource_domain_set(run_init_t)
+#deepin_controlled_resource_domain_set(semanage_t)
+
+# system admin and security resource
+#deepin_controlled_resource_type_set(dpkg_exec_t)
+#deepin_controlled_resource_type_set(init_exec_t)
+#deepin_controlled_resource_type_set(shadow_t)
+#deepin_controlled_resource_type_set(etc_t)
+#deepin_controlled_resource_type_set(usr_t)
+#deepin_controlled_resource_type_set(boot_t)
+#deepin_controlled_resource_type_set(system_map_t)
+#deepin_controlled_resource_type_set(systemd_journal_t)
+#deepin_controlled_resource_type_set(auditd_log_t)
+#deepin_controlled_resource_type_set(bin_t)
+#deepin_controlled_resource_type_set(lib_t)
+#deepin_controlled_resource_type_set(var_t)
+#deepin_controlled_resource_type_set(var_lib_t)
+
+# ptrace control
+#deepin_controlled_ptrace_domain_set(kernel_t)
+#deepin_controlled_ptrace_domain_set(init_t)
+
+# =============== audit =================
+dontaudit deepin_usaudit_type self:capability audit_control;
+tunable_policy(`deepin_enable_process_audit',`
+	allow deepin_usaudit_type self:capability audit_control;
+	allow deepin_usaudit_process_type self:capability audit_control;
+')
+
+dontaudit deepin_usaudit_type self:dir_file_class_set audit_access;
+tunable_policy(`deepin_enable_file_audit',`
+	allow deepin_usaudit_file_type self:dir_file_class_set audit_access;
+')
+
+dontaudit deepin_usaudit_type self:capability audit_write;
+tunable_policy(`deepin_enable_socket_audit',`
+	allow deepin_usaudit_type self:capability audit_write;
+	allow deepin_usaudit_socket_type self:capability audit_write;
+')
+
+# support xattr
+type deepin_usaudit_t;
+deepin_file_type_set(deepin_usaudit_t)
+deepin_usaudit_type_set(deepin_usaudit_t)
+
+# p: process audit, s: socket audit, f: file audit
+type deepin_usaudit_pxx_t;
+deepin_file_type_set(deepin_usaudit_pxx_t)
+deepin_usaudit_process_type_set(deepin_usaudit_pxx_t)
+
+type deepin_usaudit_xsx_t;
+deepin_file_type_set(deepin_usaudit_xsx_t)
+deepin_usaudit_socket_type_set(deepin_usaudit_xsx_t)
+
+type deepin_usaudit_xxf_t;
+deepin_file_type_set(deepin_usaudit_xxf_t)
+deepin_usaudit_file_type_set(deepin_usaudit_xxf_t)
+
+type deepin_usaudit_psx_t;
+deepin_file_type_set(deepin_usaudit_psx_t)
+deepin_usaudit_process_type_set(deepin_usaudit_psx_t)
+deepin_usaudit_socket_type_set(deepin_usaudit_psx_t)
+
+type deepin_usaudit_pxf_t;
+deepin_file_type_set(deepin_usaudit_pxf_t)
+deepin_usaudit_process_type_set(deepin_usaudit_pxf_t)
+deepin_usaudit_file_type_set(deepin_usaudit_pxf_t)
+
+type deepin_usaudit_xsf_t;
+deepin_file_type_set(deepin_usaudit_xsf_t)
+deepin_usaudit_socket_type_set(deepin_usaudit_xsf_t)
+deepin_usaudit_file_type_set(deepin_usaudit_xsf_t)
+
+type deepin_usaudit_psf_t;
+deepin_file_type_set(deepin_usaudit_psf_t)
+deepin_usaudit_process_type_set(deepin_usaudit_psf_t)
+deepin_usaudit_socket_type_set(deepin_usaudit_psf_t)
+deepin_usaudit_file_type_set(deepin_usaudit_psf_t)
+
+# don't support xattr (use mount_point_sid, so, need grant them appropriate permissions)
+dontaudit deepin_file_type self:capability audit_control;
+dontaudit deepin_file_type self:dir_file_class_set audit_access;
+dontaudit deepin_file_type self:capability audit_write;
+
+type deepin_na_usaudit_t;
+deepin_file_type_set(deepin_na_usaudit_t)
+deepin_usaudit_file_type_set(deepin_na_usaudit_t)
+
+type deepin_ro_usaudit_t;
+deepin_file_type_set(deepin_ro_usaudit_t)
+deepin_readable_file_type_set(deepin_ro_usaudit_t)
+deepin_usaudit_file_type_set(deepin_ro_usaudit_t)
+
+type deepin_wo_usaudit_t;
+deepin_file_type_set(deepin_wo_usaudit_t)
+deepin_writable_file_type_set(deepin_wo_usaudit_t)
+deepin_usaudit_file_type_set(deepin_wo_usaudit_t)
+
+type deepin_rw_usaudit_t;
+deepin_file_type_set(deepin_rw_usaudit_t)
+deepin_readable_file_type_set(deepin_rw_usaudit_t)
+deepin_writable_file_type_set(deepin_rw_usaudit_t)
+deepin_usaudit_file_type_set(deepin_rw_usaudit_t)
+
+type deepin_wd_usaudit_t;
+deepin_file_type_set(deepin_wd_usaudit_t)
+deepin_writable_file_type_set(deepin_wd_usaudit_t)
+deepin_deletable_file_type_set(deepin_wd_usaudit_t)
+deepin_usaudit_file_type_set(deepin_wd_usaudit_t)
+
+type deepin_rwd_usaudit_t;
+deepin_file_type_set(deepin_rwd_usaudit_t)
+deepin_readable_file_type_set(deepin_rwd_usaudit_t)
+deepin_writable_file_type_set(deepin_rwd_usaudit_t)
+deepin_deletable_file_type_set(deepin_rwd_usaudit_t)
+deepin_usaudit_file_type_set(deepin_rwd_usaudit_t)
+
+type deepin_rx_usaudit_t;
+deepin_file_type_set(deepin_rx_usaudit_t)
+deepin_readable_file_type_set(deepin_rx_usaudit_t)
+deepin_executable_file_type_set(deepin_rx_usaudit_t)
+deepin_usaudit_file_type_set(deepin_rx_usaudit_t)
+
+type deepin_rwx_usaudit_t;
+deepin_file_type_set(deepin_rwx_usaudit_t)
+deepin_readable_file_type_set(deepin_rwx_usaudit_t)
+deepin_writable_file_type_set(deepin_rwx_usaudit_t)
+deepin_executable_file_type_set(deepin_rwx_usaudit_t)
+deepin_usaudit_file_type_set(deepin_rwx_usaudit_t)
+
+type deepin_rwdx_usaudit_t;
+deepin_file_type_set(deepin_rwdx_usaudit_t)
+deepin_readable_file_type_set(deepin_rwdx_usaudit_t)
+deepin_writable_file_type_set(deepin_rwdx_usaudit_t)
+deepin_executable_file_type_set(deepin_rwdx_usaudit_t)
+deepin_deletable_file_type_set(deepin_rwd_usaudit_t)
+deepin_usaudit_file_type_set(deepin_rwdx_usaudit_t)
+
+# sid1 that all deepin_executable_file_type can access
+type deepin_home_sec_t;
+files_type(deepin_home_sec_t)
+allow deepin_home_sec_t filesystem_type:filesystem associate;
+allow deepin_home_sec_t self:filesystem associate;
+allow deepin_executable_file_type deepin_home_sec_t:file ~{ relabelfrom relabelto };
+allow deepin_executable_file_type deepin_home_sec_t:dir list_dir_perms;

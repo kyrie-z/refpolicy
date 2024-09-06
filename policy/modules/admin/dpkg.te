@@ -199,6 +199,17 @@ optional_policy(`
 	usermanage_run_useradd(dpkg_t, dpkg_roles)
 ')
 
+optional_policy(`
+	deepin_package_manage_domain_set(dpkg_t)
+	deepin_security_verify_domtrans(dpkg_t)
+')
+
+optional_policy(`
+	deepin_access_security_server(dpkg, true)
+	deepin_executable_file_type_set(dpkg_t)
+	allow dpkg_t self:file *;
+')
+
 ########################################
 #
 # Script Local policy
@@ -391,4 +402,9 @@ optional_policy(`
 optional_policy(`
 	usermanage_run_groupadd(dpkg_script_t, dpkg_roles)
 	usermanage_run_useradd(dpkg_script_t, dpkg_roles)
+')
+
+optional_policy(`
+	deepin_package_manage_domain_set(dpkg_script_t)
+	deepin_security_verify_domtrans(dpkg_script_t)
 ')

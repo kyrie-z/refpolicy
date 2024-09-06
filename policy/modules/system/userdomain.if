@@ -969,10 +969,13 @@ template(`userdom_common_user_template',`
 #
 template(`userdom_login_user_template', `
 	gen_require(`
+		attribute login_userdomain;
 		class context contains;
 	')
 
 	userdom_base_user_template($1)
+
+	typeattribute $1_t login_userdomain;
 
 	userdom_manage_home_role($1_r, $1_t)
 
@@ -4892,6 +4895,25 @@ interface(`userdom_unlink_user_tmp_devices',`
 	')
 
 	allow $1 user_tmp_t:{ chr_file blk_file } unlink;
+')
+
+########################################
+## <summary>
+##  Mount a filesystem on user tmp dir
+##  directories.
+## </summary>
+## <param name="domain">
+##  <summary>
+##  Domain allow access.
+##  </summary>
+## </param>
+#
+interface(`userdom_mounton_user_tmp_dirs',`
+    gen_require(`
+        type user_tmp_t;
+    ')
+
+    allow $1 user_tmp_t:dir mounton;
 ')
 
 ########################################

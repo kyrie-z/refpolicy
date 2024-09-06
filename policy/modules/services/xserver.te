@@ -423,6 +423,12 @@ corecmd_exec_shell(xdm_t)
 corecmd_exec_bin(xdm_t)
 corecmd_shell_entry_type(xdm_t)
 
+
+# for start deepin_elf_verify program
+optional_policy(`
+    deepin_exec_elf_verify(xdm_t)
+')
+
 dev_read_rand(xdm_t)
 dev_read_sysfs(xdm_t)
 dev_getattr_framebuffer_dev(xdm_t)
